@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio
 
-## Getting Started
+A dynamic, responsive, and themeable developer portfolio built with Next.js (App Router), Tailwind CSS, Framer Motion, and MongoDB. Features an interactive 3D skill orbit, full MongoDB integration for projects and contact messages, and a secure password-protected admin dashboard.
 
-First, run the development server:
+---
 
+## Features
+
+* **Dynamic Project Showcase:** Fetch projects directly from MongoDB with live demo URLs and GitHub links.
+* **Protected Admin Portal (`/admin`):** Add/delete live projects and view contact messages in real time.
+* **Multi-Theme Engine:** Switch seamlessly between Cyber Emerald, Neon Violet, and Light Slate themes.
+* **Interactive 3D Tech Orbit:** Interactive 3D CSS skill cloud with hover/rotation physics.
+* **Direct Contact System:** Persists messages directly to a MongoDB database.
+* **Resume Integration:** In-browser preview and one-click professional PDF download.
+
+---
+
+## Tech Stack
+
+* **Frontend:** Next.js 15+ (App Router), React, Tailwind CSS, Framer Motion, Lucide Icons
+* **Backend:** Next.js API Route Handlers, Mongoose
+* **Database:** MongoDB Atlas
+
+---
+
+## Local Setup & Installation
+
+Follow these steps to run the project locally on your machine:
+
+### 1. Clone the Repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone [https://github.com/Hritik2611/portfolio.git](https://github.com/Hritik2611/portfolio.git)
+cd portfolio
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Install Dependencies
+* ** npm install
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* **Create a .env.local file in the root directory:
 
-## Learn More
+** MONGODB_URI=your_mongodb_atlas_connection_string
+** ADMIN_PASSWORD=your_secure_admin_password
 
-To learn more about Next.js, take a look at the following resources:
+### Run the Project
+* **npm run dev
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open http://localhost:3000 in your browser.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+** Admin Dashboard
 
-## Deploy on Vercel
+Access the admin panel at:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+http://localhost:3000/admin
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Use the ADMIN_PASSWORD defined in .env.local to log in and manage projects and contact messages.
+
+## Link: https://hritik-s-dev-portfolio.vercel.app/
+
