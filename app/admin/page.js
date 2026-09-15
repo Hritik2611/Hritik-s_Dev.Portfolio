@@ -2,13 +2,19 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, Trash2, ArrowLeft, Lock, FolderGit2, Mail, ExternalLink, Palette } from "lucide-react";
+import { Plus, Trash2, ArrowLeft, Lock, FolderGit2, Mail, ExternalLink, Palette, KeyRound, ShieldCheck } from "lucide-react";
 
 export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [isAuth, setIsAuth] = useState(false);
   const [authError, setAuthError] = useState("");
   const [theme, setTheme] = useState("emerald");
+
+  // Forgot Password / OTP States
+  const [showOtpView, setShowOtpView] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpNotice, setOtpNotice] = useState("");
 
   const [projects, setProjects] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -25,7 +31,6 @@ export default function AdminPage() {
   const [formLoading, setFormLoading] = useState(false);
   const [formMsg, setFormMsg] = useState("");
 
-  // Sync theme and session password on initial mount
   useEffect(() => {
     const savedTheme = localStorage.getItem("portfolio_theme") || "emerald";
     setTheme(savedTheme);
@@ -63,6 +68,55 @@ export default function AdminPage() {
       }
     } catch {
       setAuthError("Server connection error.");
+    }
+  };
+
+  const handleSendOtp = async () => {
+    setOtpLoading(true);
+    setAuthError("");
+    setOtpNotice("");
+
+    try {
+      const res = await fetch("/api/admin/forgot-password", { method: "POST" });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setShowOtpView(true);
+        setOtpNotice(data.message);
+      } else {
+        setAuthError(data.message || "Failed to send OTP email.");
+      }
+    } catch {
+      setAuthError("Network connection error.");
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setOtpLoading(true);
+    setAuthError("");
+
+    try {
+      const res = await fetch("/api/admin/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ otp: otpCode }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success && data.adminKey) {
+        setPassword(data.adminKey);
+        sessionStorage.setItem("portfolio_admin_pass", data.adminKey);
+        setIsAuth(true);
+        loadDashboardData(data.adminKey);
+      } else {
+        setAuthError(data.message || "Invalid OTP entered.");
+      }
+    } catch {
+      setAuthError("Network error while verifying OTP.");
+    } finally {
+      setOtpLoading(false);
     }
   };
 
@@ -141,9 +195,11 @@ export default function AdminPage() {
     sessionStorage.removeItem("portfolio_admin_pass");
     setIsAuth(false);
     setPassword("");
+    setShowOtpView(false);
+    setOtpCode("");
   };
 
-  // 1. Password Login View
+  // 1. Password or OTP Login View
   if (!isAuth) {
     return (
       <div className="min-h-screen bg-grid-pattern flex items-center justify-center p-6 bg-[var(--bg-main)] text-[var(--text-main)] transition-colors">
@@ -165,33 +221,101 @@ export default function AdminPage() {
             style={{ backgroundColor: "var(--tag-bg)", borderColor: "var(--tag-border)" }}
             className="w-12 h-12 rounded-xl text-[var(--accent-text)] flex items-center justify-center mb-6 mx-auto border"
           >
-            <Lock size={22} />
+            {showOtpView ? <ShieldCheck size={22} /> : <Lock size={22} />}
           </div>
-          <h1 className="text-2xl font-bold text-center mb-2">Admin Portal</h1>
+
+          <h1 className="text-2xl font-bold text-center mb-2">
+            {showOtpView ? "Security OTP Verification" : "Admin Portal"}
+          </h1>
           <p className="text-xs text-[var(--text-muted)] text-center mb-6">
-            Enter your ADMIN_PASSWORD from your .env.local file
+            {showOtpView
+              ? "Enter the 6-digit code sent to your registered Gmail address."
+              : "Enter your ADMIN_PASSWORD to access the dashboard."}
           </p>
 
-          <form onSubmit={(e) => { e.preventDefault(); verifyLogin(); }} className="space-y-4">
-            <input
-              type="password"
-              placeholder="Admin Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-xl theme-input text-sm"
-            />
+          {!showOtpView ? (
+            <form onSubmit={(e) => { e.preventDefault(); verifyLogin(); }} className="space-y-4">
+              <input
+                type="password"
+                placeholder="Admin Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-xl theme-input text-sm"
+              />
 
-            {authError && <p className="text-rose-500 text-xs text-center">{authError}</p>}
+              {authError && <p className="text-rose-500 text-xs text-center">{authError}</p>}
 
-            <button
-              type="submit"
-              style={{ backgroundColor: "var(--accent)" }}
-              className="w-full py-3 rounded-xl text-white font-semibold text-sm transition-all hover:opacity-90 shadow-md cursor-pointer"
-            >
-              Unlock Dashboard
-            </button>
-          </form>
+              <button
+                type="submit"
+                style={{ backgroundColor: "var(--accent)" }}
+                className="w-full py-3 rounded-xl text-white font-semibold text-sm transition-all hover:opacity-90 shadow-md cursor-pointer"
+              >
+                Unlock Dashboard
+              </button>
+
+              <div className="pt-2 text-center">
+                <button
+                  type="button"
+                  onClick={handleSendOtp}
+                  disabled={otpLoading}
+                  className="text-xs text-[var(--accent-text)] hover:underline inline-flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                >
+                  <KeyRound size={13} /> {otpLoading ? "Sending Code..." : "Forgot password? Send OTP to Gmail"}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyOtp} className="space-y-4">
+              {otpNotice && (
+                <p
+                  style={{ backgroundColor: "var(--tag-bg)", borderColor: "var(--tag-border)", color: "var(--tag-text)" }}
+                  className="text-xs p-2.5 rounded-lg border text-center font-medium"
+                >
+                  {otpNotice}
+                </p>
+              )}
+
+              <input
+                type="text"
+                placeholder="Enter 6-digit OTP"
+                maxLength={6}
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-xl theme-input text-sm tracking-widest text-center font-mono text-lg font-bold"
+              />
+
+              {authError && <p className="text-rose-500 text-xs text-center">{authError}</p>}
+
+              <button
+                type="submit"
+                disabled={otpLoading}
+                style={{ backgroundColor: "var(--accent)" }}
+                className="w-full py-3 rounded-xl text-white font-semibold text-sm transition-all hover:opacity-90 shadow-md cursor-pointer disabled:opacity-50"
+              >
+                {otpLoading ? "Verifying..." : "Verify & Unlock"}
+              </button>
+
+              <div className="flex justify-between items-center pt-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => { setShowOtpView(false); setAuthError(""); }}
+                  className="text-[var(--text-muted)] hover:text-[var(--text-main)] cursor-pointer"
+                >
+                  Back to Password
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSendOtp}
+                  disabled={otpLoading}
+                  className="text-[var(--accent-text)] hover:underline cursor-pointer disabled:opacity-50"
+                >
+                  Resend OTP
+                </button>
+              </div>
+            </form>
+          )}
 
           <div className="mt-6 text-center">
             <Link href="/" className="text-xs text-[var(--text-muted)] hover:text-[var(--text-main)] inline-flex items-center gap-1 transition-colors">
@@ -261,7 +385,6 @@ export default function AdminPage() {
         {/* Tab 1: Projects Management */}
         {activeTab === "projects" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Add Project Form */}
             <div
               style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
               className="lg:col-span-1 p-6 rounded-2xl border shadow-sm backdrop-blur-md"
@@ -349,7 +472,6 @@ export default function AdminPage() {
               </form>
             </div>
 
-            {/* Current Projects List */}
             <div className="lg:col-span-2 space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2">
                 <FolderGit2 size={18} className="text-[var(--accent-text)]" /> Current Published Projects ({projects.length})
