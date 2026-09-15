@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+
+:root {
+  /* Default: Cyber Emerald */
+  --bg-main: #06080c;
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --input-bg: rgba(0, 0, 0, 0.4);
+  --input-border: rgba(255, 255, 255, 0.15);
+  --input-text: #f9fafb;
+  --input-placeholder: #6b7280;
+  --tag-bg: rgba(16, 185, 129, 0.12);
+  --tag-border: rgba(16, 185, 129, 0.25);
+  --tag-text: #34d399;
+  --accent: #10b981;
+  --accent-glow: rgba(16, 185, 129, 0.25);
+  --accent-text: #34d399;
+  --text-main: #f9fafb;
+  --text-muted: #9ca3af;
+}
+
+[data-theme="violet"] {
+  --bg-main: #0a0614;
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(168, 85, 247, 0.15);
+  --input-bg: rgba(0, 0, 0, 0.4);
+  --input-border: rgba(168, 85, 247, 0.2);
+  --input-text: #f9fafb;
+  --input-placeholder: #71717a;
+  --tag-bg: rgba(168, 85, 247, 0.12);
+  --tag-border: rgba(168, 85, 247, 0.25);
+  --tag-text: #c084fc;
+  --accent: #a855f7;
+  --accent-glow: rgba(168, 85, 247, 0.3);
+  --accent-text: #c084fc;
+  --text-main: #f9fafb;
+  --text-muted: #a1a1aa;
+}
+
+[data-theme="light"] {
+  --bg-main: #f8fafc;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --input-bg: #ffffff;             /* Crisp clean white background */
+  --input-border: #cbd5e1;         /* Sharp neat border */
+  --input-text: #0f172a;           /* Deep dark readable text */
+  --input-placeholder: #94a3b8;    /* Clean visible placeholder */
+  --tag-bg: #f1f5f9;
+  --tag-border: #cbd5e1;
+  --tag-text: #0f172a;
+  --accent: #0284c7;
+  --accent-glow: rgba(2, 132, 199, 0.18);
+  --accent-text: #0369a1;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.theme-input {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--input-text);
+  transition: all 0.2s ease;
+}
+
+.theme-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.theme-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+  outline: none;
+}
+
+/* Dot Grid Pattern */
+.bg-grid-pattern {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+[data-theme="light"] .bg-grid-pattern {
+  background-image: radial-gradient(rgba(15, 23, 42, 0.12) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
