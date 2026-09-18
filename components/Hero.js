@@ -6,10 +6,16 @@ import { ArrowRight, Download, Sparkles } from "lucide-react";
 export default function Hero() {
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center pt-24 pb-12 px-4 sm:px-6 overflow-hidden">
-      {/* Dynamic Background Glow Lighting - Optimized for mobile & desktop */}
+      {/* 
+        Smooth Radial Background Aura:
+        - Mobile par koi hard-edged blob nahi banega
+        - Dark me soft ambient glow dega aur Light me clean look
+      */}
       <div 
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-[500px] sm:h-[350px] rounded-full pointer-events-none opacity-40 sm:opacity-50 blur-3xl -z-10"
-        style={{ backgroundColor: "var(--accent)" }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] sm:w-[650px] sm:h-[450px] pointer-events-none -z-10 rounded-full"
+        style={{
+          background: "radial-gradient(circle, var(--accent-glow) 0%, transparent 70%)",
+        }}
       />
 
       <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-7 relative z-10 w-full">
@@ -32,9 +38,7 @@ export default function Hero() {
           className="text-3xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[var(--text-main)]"
         >
           Hi, I&apos;m{" "}
-          <span 
-            className="text-[var(--accent-text)] inline-block drop-shadow-sm font-black"
-          >
+          <span className="text-[var(--accent-text)] inline-block font-black">
             Ritik Singh
           </span>
         </motion.h1>
